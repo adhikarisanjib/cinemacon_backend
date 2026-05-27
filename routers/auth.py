@@ -71,4 +71,5 @@ async def refresh_access_token(token: str):
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user(db: AsyncSession = Depends(get_db), token: str = Depends(get_token)):
-    return get_authenticated_user(db, token)
+    User = await get_authenticated_user(db, token)
+    return User

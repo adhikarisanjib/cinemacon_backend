@@ -52,7 +52,7 @@ def decode_token(token: str):
 
 
 def get_token(data: str = Header(..., alias="Authorization")) -> str:
-    print("Received token inside get_token:", data)  # Debugging statement
+
     if not data.startswith("Bearer "):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token format")
     return data[(len("Bearer ")):]
