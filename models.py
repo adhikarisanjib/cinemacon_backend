@@ -62,9 +62,10 @@ class Session(Base):
     
     def occupancy_rate(self) -> float:
         total = self.total_seats_count()
+        print(self.total_seats_count(), self.booked_seats_count())
         if total == 0:
             return 0.0
-        return (self.booked_seats_count() / total) * 100
+        return self.booked_seats_count() / total
     
     def is_seat_available(self, row: str, col: int) -> bool:
         for seat in self.seats:

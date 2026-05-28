@@ -6,5 +6,6 @@ __pycache__/
 media/
 
 cinemacon.*
+*.sqlite3
 
 env.sh
