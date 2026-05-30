@@ -5,8 +5,21 @@ from models import Seat, SeatType, SeatStatus
 ROWS = list("ABCDEFGHIJKLMNO")
 COLS = list(range(1, 29)) 
 
-VIP_ROWS = set("EFGHI")
-VIP_COLS = {12, 13, 14, 15}
+
+possible_vip_rows = [
+    ["E", "F", "G", "H"],
+    ["F", "G", "H", "I"]
+]
+
+selected_rows = random.choice(possible_vip_rows)
+
+VIP_LAYOUT = {
+    selected_rows[0]: 12,
+    selected_rows[1]: 13,
+    selected_rows[2]: 14,
+    selected_rows[3]: 15,
+}
+
 
 def generate_disability_seats() -> list[tuple[str, int]]:
     candidate_pairs = [
@@ -32,20 +45,45 @@ def apply_broken_seats(seats: list[Seat]):
 
     return seats
 
+
 def build_seat_template(session_id: int = 0) -> list[Seat]:
     disability_seats = set(generate_disability_seats())
     seats = []
+
+    total_cols = len(COLS)
+
+    vip_positions = set()
+
+    for row, vip_count in VIP_LAYOUT.items():
+
+        start_col = (total_cols - vip_count) // 2 + 1
+        end_col = start_col + vip_count - 1
+
+        for col in range(start_col, end_col + 1):
+            vip_positions.add((row, col))
+
     for row in ROWS:
         for col in COLS:
+
             key = (row, col)
+
             if key in disability_seats:
                 seat_type = SeatType.DISABILITY.value
-            elif row in VIP_ROWS and col in VIP_COLS:
+
+            elif key in vip_positions:
                 seat_type = SeatType.VIP.value
+
             else:
                 seat_type = SeatType.REGULAR.value
-            
-            seat = Seat(session_id=session_id, row=row, col=col, seat_type=seat_type, status=SeatStatus.AVAILABLE.value)
+
+            seat = Seat(
+                session_id=session_id,
+                row=row,
+                col=col,
+                seat_type=seat_type,
+                status=SeatStatus.AVAILABLE.value
+            )
+
             seats.append(seat)
 
     apply_broken_seats(seats)
